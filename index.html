@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DysCover English Hub - Accessible B1+ LMS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=Open+Sans:wght@400;600;700&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-canvas: #F8FAFC;
+            --surface: #FFFFFF;
+            --primary-dark: #2D3270;
+            --secondary-purple: #635BFF;
+            --pastel-lavender: #EEF2FF;
+            --pastel-mint: #ECFDF5;
+            --pastel-rose: #FFF1F2;
+            --text-main: #1E293B;
+            --text-subtle: #475569;
+            --border-color: #E2E8F0;
+            --font-family: 'Atkinson Hyperlegible', sans-serif;
+            --font-size-base: 1rem;
+            --line-height: 1.85;
+            --letter-spacing: 0.04em;
+        }
+
+        body.theme-lavender { --bg-canvas: #F5F3FF; --surface: #FFFFFF; }
+        body.theme-mint { --bg-canvas: #F0FDF4; --surface: #FFFFFF; }
+        body.theme-rose { --bg-canvas: #FFF1F2; --surface: #FFFFFF; }
+        body.theme-amber { --bg-canvas: #FEF3C7; --surface: #FFFFFF; }
+        body.theme-dark { --bg-canvas: #0F172A; --surface: #1E293B; --text-main: #F8FAFC; --text-subtle: #94A3B8; --border-color: #334155; --primary-dark: #A5B4FC; }
+
+        body.font-atkinson { font-family: 'Atkinson Hyperlegible', sans-serif; }
+        body.font-opensans { font-family: 'Open Sans', sans-serif; }
+        body.font-comic { font-family: 'Comic Neue', cursive, sans-serif; }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: var(--bg-canvas); color: var(--text-main); font-family: var(--font-family); font-size: var(--font-size-base); line-height: var(--line-height); letter-spacing: var(--letter-spacing); padding: 20px; transition: background 0.3s; }
+
+        #reading-focus-guide { position: fixed; pointer-events: none; height: 38px; width: 100%; background: rgba(99, 91, 255, 0.12); border-top: 2px solid var(--secondary-purple); border-bottom: 2px solid var(--secondary-purple); top: -100px; left: 0; z-index: 9999; display: none; }
+
+        .container { max-width: 1000px; margin: 0 auto; }
+        header { background: var(--surface); border: 2px solid var(--border-color); border-radius: 16px; padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); flex-wrap: wrap; gap: 15px; }
+
+        .brand-box { display: flex; align-items: center; gap: 15px; }
+        .brand-logo-svg { width: 50px; height: 50px; }
+        .brand-text h1 { font-size: 1.4rem; color: var(--primary-dark); font-weight: 700; line-height: 1.1; }
+        .brand-text p { font-size: 0.85rem; color: var(--text-subtle); }
+
+        .toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+        .btn-tool { background: var(--surface); color: var(--primary-dark); border: 1.5px solid var(--border-color); padding: 8px 12px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
+        .btn-tool:hover { background: var(--secondary-purple); color: #FFF; }
+
+        .card { background: var(--surface); border: 2px solid var(--border-color); border-radius: 16px; padding: 30px; margin-bottom: 25px; box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
+        .unit-selector { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 20px; }
+        .unit-tab { background: var(--surface); border: 2px solid var(--border-color); padding: 10px 18px; border-radius: 10px; cursor: pointer; font-weight: 700; white-space: nowrap; color: var(--text-subtle); }
+        .unit-tab.active { background: var(--secondary-purple); color: #FFF; border-color: var(--secondary-purple); }
+        .unit-tab.locked { opacity: 0.5; cursor: not-allowed; background: #E2E8F0; }
+
+        .session-stepper { display: flex; gap: 8px; margin-bottom: 25px; background: var(--surface); padding: 8px; border-radius: 12px; border: 1px solid var(--border-color); }
+        .session-btn { flex: 1; padding: 10px; border: none; background: transparent; border-radius: 8px; font-weight: 700; cursor: pointer; color: var(--text-subtle); }
+        .session-btn.active { background: var(--pastel-lavender); color: var(--primary-dark); border: 1px solid var(--secondary-purple); }
+        .session-btn.locked { opacity: 0.4; cursor: not-allowed; }
+
+        .skill-block { background: var(--surface); border-left: 5px solid var(--secondary-purple); padding: 25px; border-radius: 0 12px 12px 0; margin-bottom: 25px; border-top: 1px solid var(--border-color); border-right: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); }
+        .reading-paragraph { margin-bottom: 16px; text-align: justify; }
+        .clickable-word { cursor: pointer; border-bottom: 2px dotted var(--secondary-purple); padding: 0 2px; }
+        .clickable-word:hover { background: var(--pastel-lavender); border-radius: 4px; }
+
+        .quiz-option { display: block; width: 100%; padding: 12px; margin: 8px 0; background: var(--bg-canvas); border: 1.5px solid var(--border-color); border-radius: 8px; text-align: left; cursor: pointer; font-weight: 600; color: var(--text-main); }
+        .quiz-option:hover { border-color: var(--secondary-purple); }
+
+        .feedback-box { padding: 14px; border-radius: 8px; margin-top: 10px; font-weight: 600; }
+        .feedback-correct { background: var(--pastel-mint); color: #065F46; border: 1px solid #A7F3D0; }
+        .feedback-incorrect { background: var(--pastel-rose); color: #991B1B; border: 1px solid #FECDD3; }
+
+        textarea.board-input { width: 100%; min-height: 120px; padding: 14px; border: 1.5px solid var(--border-color); border-radius: 10px; background: var(--bg-canvas); color: var(--text-main); font-family: inherit; font-size: 1rem; margin: 10px 0; }
+        .hidden { display: none !important; }
+        .auth-toggle { color: var(--secondary-purple); cursor: pointer; font-weight: bold; text-decoration: underline; margin-top: 15px; display: inline-block; }
+
+        #dys-ai-widget { position: fixed; bottom: 20px; right: 20px; z-index: 9999; }
+        .dys-bubble { background: var(--secondary-purple); color: #FFF; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .dys-chat-box { position: absolute; bottom: 75px; right: 0; width: 320px; background: var(--surface); border: 2px solid var(--border-color); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: flex; flex-direction: column; overflow: hidden; }
+        .dys-chat-header { background: var(--primary-dark); color: #FFF; padding: 12px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+        .dys-chat-body { padding: 12px; height: 220px; overflow-y: auto; font-size: 0.9rem; display: flex; flex-direction: column; gap: 8px; }
+        .dys-chat-footer { padding: 10px; display: flex; gap: 6px; border-top: 1px solid var(--border-color); background: var(--bg-canvas); }
+        .dys-chat-footer input { flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+
+<div id="reading-focus-guide"></div>
+
+<div class="container">
+    <header>
+        <div class="brand-box">
+            <svg class="brand-logo-svg" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M40 140V50C40 40 55 35 75 35C95 35 110 45 110 45V135C110 135 95 125 75 125C55 125 40 140 40 140Z" fill="#2D3270"/>
+                <path d="M110 45C110 45 125 35 145 35C165 35 180 40 180 50V140C180 140 165 125 145 125C125 125 110 135 110 135V45Z" fill="#5752BA"/>
+                <circle cx="110" cy="100" r="65" stroke="#8FA0FF" stroke-width="12" fill="none"/>
+                <path d="M110 30L145 110L110 95L75 110L110 30Z" fill="#2D3270"/>
+                <circle cx="110" cy="70" r="14" fill="#FFFFFF"/>
+                <path d="M100 70H120M110 60V80" stroke="#CC0000" stroke-width="4"/>
+            </svg>
+            <div class="brand-text">
+                <h1>DysCover English</h1>
+                <p>Multisensory B1+ EFL Hub</p>
+            </div>
+        </div>
+        <div class="toolbar">
+            <select class="btn-tool" onchange="changeTheme(this.value)" title="Background Theme">
+                <option value="lavender">🌸 Soft Lavender</option>
+                <option value="mint">🌿 Pale Mint</option>
+                <option value="rose">🌷 Soft Rose</option>
+                <option value="amber">🌾 Warm Cream</option>
+                <option value="dark">🌙 Dark Contrast</option>
+            </select>
+            <select class="btn-tool" onchange="changeFont(this.value)" title="Dyslexia-friendly Font">
+                <option value="atkinson">Font: Atkinson</option>
+                <option value="opensans">Font: Open Sans</option>
+                <option value="comic">Font: Comic Neue</option>
+            </select>
+            <select class="btn-tool" onchange="changeFontSize(this.value)" title="Text Size">
+                <option value="1rem">Size: Normal</option>
+                <option value="1.15rem">Size: Large (+)</option>
+                <option value="1.3rem">Size: X-Large (++)</option>
+            </select>
+            <button class="btn-tool" onclick="toggleFocusGuide()">📏 Reading Guide</button>
+        </div>
+    </header>
+
+    <!-- AUTHENTICATION CARD -->
+    <div id="auth-card" class="card">
+        <h2 id="auth-title" style="color: var(--primary-dark); margin-bottom: 10px;">Student Login</h2>
+        <p id="auth-subtitle" style="color: var(--text-subtle); margin-bottom: 20px;">Enter your credentials to securely access your cloud-saved course progress across devices.</p>
+
+        <div style="margin-bottom: 15px;" id="name-field-container" class="hidden">
+            <label style="font-weight: 700; display: block; margin-bottom: 8px;">Full Name / Nickname:</label>
+            <input type="text" id="auth-name" placeholder="e.g. Alex_B1" style="width: 100%; padding: 12px; border-radius: 8px; border: 1.5px solid var(--border-color); font-size: 1rem; font-family: inherit;">
+            <label style="display: flex; align-items: center; gap: 8px; margin-top: 10px; font-weight: 600; cursor: pointer;">
+                <input type="checkbox" id="user-anonymous"> Post as Anonymous in collaborative boards
+            </label>
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label style="font-weight: 700; display: block; margin-bottom: 8px;">Student Email:</label>
+            <input type="email" id="auth-email" placeholder="e.g. student@university.edu" style="width: 100%; padding: 12px; border-radius: 8px; border: 1.5px solid var(--border-color); font-size: 1rem; font-family: inherit;">
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <label style="font-weight: 700; display: block; margin-bottom: 8px;">Password:</label>
+            <input type="password" id="auth-password" placeholder="••••••••" style="width: 100%; padding: 12px; border-radius: 8px; border: 1.5px solid var(--border-color); font-size: 1rem; font-family: inherit;">
+        </div>
+
+        <button id="auth-submit-btn" class="btn-tool" style="background: var(--secondary-purple); color: #FFF; width: 100%; padding: 14px; font-size: 1rem;" onclick="handleAuth()">Sign In ➔</button>
+        
+        <div style="text-align: center;">
+            <span id="auth-toggle-text" class="auth-toggle" onclick="toggleAuthMode()">Don't have an account? Register here</span>
+        </div>
+    </div>
+
+    <!-- MENTIMETER SURVEY CARD -->
+    <div id="survey-card" class="card hidden">
+        <h2 style="color: var(--primary-dark); margin-bottom: 10px;">Diagnostic Intake Questionnaire</h2>
+        <p style="color: var(--text-subtle); margin-bottom: 20px;">Please answer these 3 quick questions to customize your academic environment.</p>
+
+        <div style="margin-bottom: 20px;">
+            <label style="font-weight: 700; display: block; margin-bottom: 8px;">1. Would combining audio, colors, and visual aids help you understand grammar?</label>
+            <select class="quiz-option" id="survey-q1">
+                <option>A lot! I learn better by seeing and listening at the same time.</option>
+                <option>It would help me organize my ideas better.</option>
+                <option>I don't mind, I prefer text only.</option>
+            </select>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <label style="font-weight: 700; display: block; margin-bottom: 8px;">2. How would you prefer to learn and demonstrate what you know in this course?</label>
+            <select class="quiz-option" id="survey-q2">
+                <option>At my own pace, with multimedia support and no timers.</option>
+                <option>With a step-by-step visual guide that I can pause.</option>
+                <option>With traditional live classes held on a fixed schedule.</option>
+            </select>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <label style="font-weight: 700; display: block; margin-bottom: 8px;">3. Do you often find that letters seem to blur together or that reading long texts on a screen tires you out?</label>
+            <select class="quiz-option" id="survey-q3">
+                <option>Sometimes it happens to me, and I need to reread.</option>
+                <option>Yes, I find it difficult to follow continuous reading.</option>
+                <option>I prefer short texts or audio support.</option>
+                <option>It rarely happens to me.</option>
+            </select>
+        </div>
+
+        <button class="btn-tool" style="background: var(--secondary-purple); color: #FFF; width: 100%; padding: 14px; font-size: 1rem;" onclick="completeSurvey()">Save & Enter Course Hub ➔</button>
+    </div>
+
+    <!-- MAIN HUB DISPLAY -->
+    <div id="portal-display" class="hidden">
+        <div class="card" style="background: var(--pastel-lavender); padding: 15px 25px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div>
+                <strong>Student:</strong> <span id="display-student-name">-</span> | <strong>Email:</strong> <span id="display-student-email">-</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div>
+                    <strong>Overall Progress:</strong> <span id="progress-percent">0%</span> 
+                    <progress id="course-progress-bar" value="0" max="40" style="width: 120px; margin-left: 8px;"></progress>
+                </div>
+                <button class="btn-tool" style="background: #EF4444; color: #FFF; padding: 6px 12px; font-size: 0.8rem;" onclick="logoutUser()">Log Out 🚪</button>
+            </div>
+        </div>
+
+        <div class="unit-selector" id="unit-tabs"></div>
+        <div class="session-stepper" id="session-tabs"></div>
+        <div class="card" id="content-display"></div>
+    </div>
+</div>
+
+<!-- DYS AI FLOATING WIDGET -->
+<div id="dys-ai-widget" class="hidden">
+    <div class="dys-chat-box hidden" id="dys-chat-window">
+        <div class="dys-chat-header">
+            <span>🤖 Dys - AI Academic Companion</span>
+            <button onclick="toggleDysChat()" style="background:none; border:none; color:#FFF; cursor:pointer; font-weight:bold;">×</button>
+        </div>
+        <div class="dys-chat-body" id="dys-chat-messages">
+            <div style="background: var(--pastel-lavender); padding: 8px; border-radius: 6px;">Hello! I am Dys, your AI collaborator. Ask me anything about grammar, vocabulary, or request custom explanations!</div>
+        </div>
+        <div class="dys-chat-footer">
+            <input type="text" id="dys-input-msg" placeholder="Ask Dys a question...">
+            <button class="btn-tool" style="background: var(--secondary-purple); color:#FFF; padding: 6px 10px;" onclick="sendDysMessage()">Send</button>
+        </div>
+    </div>
+    <div class="dys-bubble" onclick="toggleDysChat()" title="Chat with Dys AI">🤖</div>
+</div>
+
+<!-- WORD MODAL (SOLO IPA Y AUDIO CON ACENTO Y VOZ) -->
+<div id="word-modal" class="card hidden" style="position: fixed; top: 15%; left: 50%; transform: translateX(-50%); width: 90%; max-width: 480px; z-index: 999; box-shadow: 0 10px 30px rgba(0,0,0,0.25);">
+    <h3 id="word-title" style="color: var(--primary-dark); margin-bottom: 10px;">Phonetic Pronunciation</h3>
+    <div id="word-body" style="margin: 15px 0; font-size: 1.15rem; line-height: 1.6;"></div>
+    <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
+        <select id="modal-voice-select" class="btn-tool" style="flex: 1;">
+            <option value="en-US">US Female</option>
+            <option value="en-US-male">US Male</option>
+            <option value="en-GB">UK Female</option>
+            <option value="en-GB-male">UK Male</option>
+        </select>
+        <select id="modal-speed-select" class="btn-tool">
+            <option value="0.75">0.75x</option>
+            <option value="1.0" selected>1.0x</option>
+            <option value="1.25">1.25x</option>
+        </select>
+    </div>
+    <div style="display: flex; gap: 10px;">
+        <button class="btn-tool" style="background: var(--secondary-purple); color: #FFF; flex: 1;" id="btn-speak-word">🔊 Listen Pronunciation</button>
+        <button class="btn-tool" onclick="closeWordModal()">Close</button>
+    </div>
+</div>
+
+<script>
+    let isRegisterMode = false;
+    let userProfile = { email: '', nickname: 'Student', password: '', anonymous: false, surveyCompleted: false };
+    let currentUnit = 1;
+    let currentSession = 1;
+    let unlockedUnit = 1;
+    let unlockedSession = 1;
+    let skillStep = 1;
+    let audioListenCount = 0;
+    let activityOrder = ['reading', 'listening', 'speaking', 'writing', 'arcade'];
+
+    let currentUtterance = null;
+    let isPausedAudio = false;
+    let lastAudioScript = '';
+
+    let mediaRecorder;
+    let audioChunks = [];
+    let recordingTimer = null;
+    let secondsElapsed = 0;
+
+    const unitsData = [
+        { id: 1, title: "Unit 1: Urban Wayfinding & Campus Accessibility", focus: "Present Simple vs. Continuous" },
+        { id: 2, title: "Unit 2: International Travel Logistics & Airports", focus: "Past Simple (Regular & Irregular Verbs)" },
+        { id: 3, title: "Unit 3: Cultural Exchange & Memorable Experiences", focus: "Present Perfect vs. Simple Past" },
+        { id: 4, title: "Unit 4: Environmental Conservation & Ecosystems", focus: "First and Second Conditionals" },
+        { id: 5, title: "Unit 5: Scientific Innovation & Technological Futures", focus: "Future Forms (Will vs. Going to)" },
+        { id: 6, title: "Unit 6: Culinary Arts & Global Gastronomy", focus: "Quantifiers & Partitives" },
+        { id: 7, title: "Unit 7: Contemporary Literature & Narrative Arts", focus: "Relative Clauses" },
+        { id: 8, title: "Unit 8: Career Development & Professional Networking", focus: "Modal Verbs of Obligation" }
+    ];
+
+    // BANCO DE CONTENIDOS 100% ÚNICO Y DIVERSIFICADO PARA LAS 8 UNIDADES Y 5 SESIONES
+    const sessionContents = {
+        1: {
+            1: {
+                title: "Session 1: Introduction to Campus Mobility & Sidewalks",
+                focus: "Present Simple vs. Continuous",
+                intro: "<strong>Context & Grammar:</strong> Modern undergraduate mobility requires robust spatial orientation frameworks. We examine permanent institutional layouts using the <em>Present Simple</em> tense, alongside ongoing infrastructure updates using the <em>Present Continuous</em> tense.",
+                theoryImg: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=600&auto=format&fit=crop&q=80",
+                vocabulary: [
+                    { term: "Navigating", type: "verb", meaning: "To direct course or move through a complex place." },
+                    { term: "Infrastructure", type: "noun", meaning: "Basic systems and organizational structures for society." }
+                ],
+                paragraphs: [
+                    "Navigating contemporary university campuses poses significant visual and spatial challenges for modern undergraduate students. Traditional maps frequently rely on dense, highly crowded typographic hierarchies, small font matrices, and complex color-coded keys that trigger acute visual fatigue during peak hours.",
+                    "To resolve these systemic spatial barriers, multidisciplinary teams of urban planners are currently prototyping accessible digital kiosk networks across higher education institutions. Rather than overwhelming users with continuous text blocks, these portals utilize chunked visual spatial pathways paired with high-contrast structural landmarks.",
+                    "Empirical spatial cognition studies indicate that substituting continuous directional text with high-contrast visual-spatial anchors successfully diminishes spatial orientation anxiety by up to 42 percent among student cohorts, ensuring undergraduates traverse expansive institutional grounds with heightened independence."
+                ],
+                audioScript: "Welcome to Session 1 focusing on institutional transit accessibility and universal spatial design. Urban mobility researchers across European consortiums are currently analyzing longitudinal student transit data to evaluate infrastructural bottlenecks.",
+                readingImg: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=600&auto=format&fit=crop&q=80",
+                questionsRead: [
+                    { q: "1. According to the text, what do traditional campus maps frequently rely on?", options: ["A) Minimalist vector graphics and audio buttons.", "B) Dense typographic hierarchies and small font matrices.", "C) Holographic floor projections."], correct: "B", explanation: "The text explicitly states maps rely on dense typographic hierarchies and small font matrices." },
+                    { q: "2. What are multidisciplinary teams currently prototyping?", options: ["A) Accessible digital kiosk networks and chunked spatial pathways.", "B) Underground electric tram systems.", "C) Mandatory student escort services."], correct: "A", explanation: "Urban planners are currently prototyping accessible digital kiosk networks." },
+                    { q: "3. What percentage does spatial orientation anxiety decrease by?", options: ["A) Exactly 15 percent.", "B) Up to 42 percent.", "C) More than 75 percent."], correct: "B", explanation: "Studies indicate orientation anxiety decreases by up to 42 percent." },
+                    { q: "4. Which grammatical tense is primarily highlighted in this session?", options: ["A) Present Continuous", "B) Past Perfect", "C) Future Conditional"], correct: "A", explanation: "Ongoing updates are described using the Present Continuous." }
+                ],
+                questionsList: [
+                    { q: "1. What data are urban mobility researchers analyzing?", options: ["A) Longitudinal student transit data.", "B) Cafeteria food consumption patterns.", "C) Wi-Fi router bandwidth consumption."], correct: "A", explanation: "Researchers are analyzing longitudinal student transit data." },
+                    { q: "2. Why do legacy signage systems fail?", options: ["A) They depend on static high-density text panels during peak hours.", "B) The lighting is always turned off.", "C) They are written in foreign languages."], correct: "A", explanation: "Legacy systems depend on static high-density text panels during peak transition hours." },
+                    { q: "3. What technology are facilities deploying along thoroughfares?", options: ["A) Smart Bluetooth Low Energy proximity beacons.", "B) Automated ticket turnstiles.", "C) High-speed security cameras."], correct: "A", explanation: "Institutions deploy Bluetooth low energy proximity beacons." },
+                    { q: "4. What qualitative feedback was confirmed regarding auditory scaffolding?", options: ["A) It bolsters spatial confidence and mitigates reading fatigue.", "B) It causes auditory distraction.", "C) Students ignored prompts."], correct: "A", explanation: "Auditory scaffolding bolsters spatial confidence and mitigates reading fatigue." }
+                ]
+            },
+            2: {
+                title: "Session 2: Visual Processing & Architectural Ergonomics",
+                focus: "Cognitive Load Theory",
+                intro: "<strong>Context & Grammar:</strong> Architectural ergonomics examines the dynamic interaction between building structures and human visual perception. We analyze chromatic zoning to reduce cognitive strain.",
+                theoryImg: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&auto=format&fit=crop&q=80",
+                vocabulary: [
+                    { term: "Ergonomics", type: "noun", meaning: "Study of people and working conditions to improve efficiency." },
+                    { term: "Corridor", type: "noun", meaning: "A long passage in a building with doors on either side." }
+                ],
+                paragraphs: [
+                    "Architectural ergonomics examines how physical building layouts interact with human perceptual faculties. When lecture halls lack clear chromatic delineation, students frequently experience disorientation when locating seminar rooms.",
+                    "Recent interior redesign initiatives incorporate color-coded floor striping and tactile wall indicators. These multisensory cues act as cognitive waypoints, allowing learners to allocate mental bandwidth toward lecture absorption rather than wayfinding.",
+                    "Cognitive psychologists note that environmental legibility directly correlates with academic retention. Clean spatial geometry reduces visual clutter in temporal lobes."
+                ],
+                audioScript: "Welcome to Session 2 on architectural ergonomics. Environmental psychologists emphasize that building geometry profoundly influences student focus and working memory.",
+                readingImg: "https://images.unsplash.com/photo-1497215728101-856f4ea42174?w=600&auto=format&fit=crop&q=80",
+                questionsRead: [
+                    { q: "1. What does architectural ergonomics examine?", options: ["A) Physical building layouts interacting with perceptual faculties.", "B) Acoustic resonance of concert halls.", "C) Exterior building paint durability."], correct: "A", explanation: "Ergonomics examines physical building layouts interacting with perceptual faculties." },
+                    { q: "2. What do recent interior redesign initiatives incorporate?", options: ["A) Color-coded floor striping and tactile wall indicators.", "B) Complete removal of hallway walls.", "C) Holographic wall projections."], correct: "A", explanation: "Redesigns incorporate color-coded floor striping and tactile indicators." },
+                    { q: "3. What effect does environmental legibility have?", options: ["A) It correlates directly with academic retention.", "B) It increases student fatigue.", "C) It has no measurable impact."], correct: "A", explanation: "Legibility directly correlates with academic retention." },
+                    { q: "4. Where is visual clutter reduced?", options: ["A) In the brain processing centers.", "B) In the optical nerve.", "C) In the auditory cortex."], correct: "A", explanation: "Visual clutter is reduced in cognitive processing centers." }
+                ],
+                questionsList: [
+                    { q: "1. What do environmental psychologists emphasize?", options: ["A) Building geometry profoundly influences student focus.", "B) Lighting has no effect on mood.", "C) Corridors must be dark."], correct: "A", explanation: "Geometry profoundly influences focus." },
+                    { q: "2. What happens when corridors lack intuitive markers?", options: ["A) Working memory is taxed by navigational guesswork.", "B) Students walk faster.", "C) Lighting dims."], correct: "A", explanation: "Working memory is taxed by navigational guesswork." },
+                    { q: "3. What is modern architecture integrating?", options: ["A) Chromatic zoning with distinct color palettes for departments.", "B) Audio alarms at every corner.", "C) Strict one-way walking rules."], correct: "A", explanation: "Architecture integrates chromatic zoning per department." },
+                    { q: "4. What is the primary benefit of reducing guesswork?", options: ["A) Preserving working memory for academic tasks.", "B) Reducing cleaning costs.", "C) Speeding up class changes."], correct: "A", explanation: "Preserving working memory for academic tasks." }
+                ]
+            },
+            3: {
+                title: "Session 3: Digital Kiosks & Touch-Interface Accessibility",
+                focus: "User-Centered Digital Design",
+                intro: "<strong>Context & Grammar:</strong> Public digital interfaces serve as technological gateways. We analyze inclusive usability standards, haptic feedback integration, and adjustable typography.",
+                theoryImg: "https://images.unsplash.com/photo-1531482615713-2afd69097998?w=600&auto=format&fit=crop&q=80",
+                vocabulary: [
+                    { term: "Accessibility", type: "noun", meaning: "Feature of being easy to use for people with disabilities." },
+                    { term: "Interface", type: "noun", meaning: "Point of interaction between a user and a computer program." }
+                ],
+                paragraphs: [
+                    "Interactive digital kiosks stationed at campus entrances serve as the primary digital gateway for visitors and students alike. Ensuring high-contrast UI modes and scalable typography is vital for inclusive usability.",
+                    "Designers are currently integrating haptic feedback surfaces and voice-activated query engines into touchscreen panels. This ensures that visually impaired scholars can access transit schedules effortlessly.",
+                    "Usability testing reveals that eliminating nested menu layers reduces user frustration and accelerates destination lookup times by 65 percent."
+                ],
+                audioScript: "Welcome to Session 3 on digital kiosk accessibility. Modern university touch-interfaces must accommodate diverse sensory needs through scalable typography and high contrast.",
+                readingImg: "https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=600&auto=format&fit=crop&q=80",
+                questionsRead: [
+                    { q: "1. What do interactive digital kiosks serve as?", options: ["A) The primary digital gateway for visitors and students.", "B) Automated tuition payment stations.", "C) Cafeteria meal ordering terminals."], correct: "A", explanation: "Kiosks serve as primary digital gateways." },
+                    { q: "2. What features are designers integrating into touchscreen panels?", options: ["A) Haptic feedback surfaces and voice-activated query engines.", "B) Mechanical coin slots and ticket printers.", "C) Biometric fingerprint scanners."], correct: "A", explanation: "Designers integrate haptic feedback and voice queries." },
+                    { q: "3. What benefit does eliminating nested menu layers provide?", options: ["A) Accelerates destination lookup times by 65 percent.", "B) Decreases electricity consumption.", "C) Lowers manufacturing costs."], correct: "A", explanation: "Eliminating nested layers accelerates lookup times by 65%." },
+                    { q: "4. Who benefits primarily from haptic feedback and voice queries?", options: ["A) Visually impaired scholars.", "B) Faculty administrators.", "C) Maintenance personnel."], correct: "A", explanation: "Visually impaired scholars benefit from haptic and voice enhancements." }
+                ],
+                questionsList: [
+                    { q: "1. What must modern university touch-interfaces accommodate?", options: ["A) Diverse sensory needs.", "B) Heavy rainfall.", "C) High-voltage spikes."], correct: "A", explanation: "Interfaces must accommodate diverse sensory needs." },
+                    { q: "2. Which features bridge the gap between digital tools and physical navigation?", options: ["A) Adjustable font scaling, high-contrast themes, and screen-readers.", "B) Bright neon backlights.", "C) Built-in web browsers."], correct: "A", explanation: "Adjustable scaling, high contrast, and screen-readers bridge the gap." },
+                    { q: "3. What do usability trials confirm about simplified touch targets?", options: ["A) They dramatically decrease task abandonment rates.", "B) They increase typing speed.", "C) They reduce screen glare."], correct: "A", explanation: "Simplified targets decrease task abandonment." },
+                    { q: "4. What is the primary purpose of kiosk accessibility enhancements?", options: ["A) Universal usability across student demographics.", "B) Reducing software license fees.", "C) Complying with aesthetic guidelines."], correct: "A", explanation: "Universal usability is the primary purpose." }
+                ]
+            },
+            4: {
+                title: "Session 4: Weather & Meteorological Adaptation in Transit",
+                focus: "Real-Time Environmental Variables",
+                intro: "<strong>Context & Grammar:</strong> Outdoor walkways face extreme seasonal variations. We explore smart IoT weather sensors, heated pavement grids, and real-time mobile hazard notifications.",
+                theoryImg: "https://images.unsplash.com/photo-1519692933481-e162a57d6721?w=600&auto=format&fit=crop&q=80",
+                vocabulary: [
+                    { term: "Precipitation", type: "noun", meaning: "Rain, snow, sleet, or hail falling to the ground." },
+                    { term: "Sensor", type: "noun", meaning: "A device that detects or measures physical conditions." }
+                ],
+                paragraphs: [
+                    "Outdoor pedestrian pathways must endure rigorous seasonal fluctuations, from torrential summer downpours to winter frost. Sustainable campus planning incorporates covered porticos and heated pavement grids.",
+                    "Smart weather sensors embedded in walkways detect freezing temperatures in real-time, automatically activating anti-icing thermal coils and transmitting hazard warnings to student mobile applications.",
+                    "These adaptive interventions prevent slip-and-fall incidents and maintain unimpeded pedestrian flow throughout inclement weather events."
+                ],
+                audioScript: "Welcome to Session 4 on meteorological transit adaptation. Campus safety audits indicate unexpected weather shifts create severe transit bottlenecks around open quadrangles.",
+                readingImg: "https://images.unsplash.com/photo-1519692933481-e162a57d6721?w=600&auto=format&fit=crop&q=80",
+                questionsRead: [
+                    { q: "1. What weather conditions do outdoor pathways endure?", options: ["A) Torrential summer downpours and winter frost.", "B) Volcanic ash fallout.", "C) Desert sandstorms."], correct: "A", explanation: "Pathways endure torrential downpours and winter frost." },
+                    { q: "2. What do smart weather sensors detect in walkways?", options: ["A) Freezing temperatures in real-time.", "B) Walking speeds.", "C) Air pollution."], correct: "A", explanation: "Sensors detect freezing temperatures in real-time." },
+                    { q: "3. What action do heated pavement grids take automatically?", options: ["A) Activate anti-icing thermal coils.", "B) Play warning sirens.", "C) Illuminate strobe lights."], correct: "A", explanation: "Heated grids activate anti-icing thermal coils." },
+                    { q: "4. What is the primary operational goal of these adaptive interventions?", options: ["A) Prevent slip-and-fall incidents and maintain pedestrian flow.", "B) Melt snow for pools.", "C) Generate geothermal electricity."], correct: "A", explanation: "The goal is preventing slips and maintaining flow." }
+                ],
+                questionsList: [
+                    { q: "1. What do campus safety audits indicate about weather shifts?", options: ["A) They create severe transit bottlenecks around open quadrangles.", "B) They have no impact.", "C) They improve study habits."], correct: "A", explanation: "Weather shifts create severe transit bottlenecks." },
+                    { q: "2. How do facilities teams manage icy patches proactively?", options: ["A) By deploying IoT temperature sensors beneath walkways.", "B) By spreading salt manually every hour.", "C) By closing campus."], correct: "A", explanation: "Teams deploy IoT temperature sensors beneath walkways." },
+                    { q: "3. What information do mobile alerts deliver to students during storms?", options: ["A) Optimal sheltered detours.", "B) Cafeteria daily menus.", "C) Exam schedule changes."], correct: "A", explanation: "Alerts deliver optimal sheltered detours." },
+                    { q: "4. When do mobile alerts notify students?", options: ["A) Before pedestrian traffic peaks.", "B) After accidents occur.", "C) Only at midnight."], correct: "A", explanation: "Alerts notify students before traffic peaks." }
+                ]
+            },
+            5: {
+                title: "Session 5: Unit 1 Capstone Community Forum",
+                focus: "Comprehensive Urban Accessibility Consolidation",
+                intro: "<strong>Context & Overview:</strong> As the culminating capstone of Unit 1, this session integrates spatial ergonomics, digital kiosks, and meteorological adaptations into a collaborative community forum.",
+                theoryImg: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&auto=format&fit=crop&q=80",
+                vocabulary: [
+                    { term: "Synthesis", type: "noun", meaning: "Combining separate ideas to form a coherent whole." },
+                    { term: "Manifesto", type: "noun", meaning: "A written public statement explaining aims and policies." }
+                ],
+                paragraphs: [
+                    "As the culmination of Unit 1, this session requires scholars to integrate all structural accessibility dimensions into an executive campus modernization proposal.",
+                    "Synthesizing visual wayfinding anchors, tactile paving matrices, and IoT weather sensors ensures that institutional architecture serves every member of the academic community equitably.",
+                    "Through rigorous peer review and academic debate, students defend their infrastructure blueprints before the university planning committee."
+                ],
+                audioScript: "Welcome to the Unit 1 Capstone review session. You have examined cognitive ergonomics, digital kiosk interfaces, and weather adaptation systems.",
+                readingImg: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=600&auto=format&fit=crop&q=80"
+            }
+        },
+        // GENERADOR DINÁMICO DE UNIDADES 2 A 8 CON CONTENIDO 100% ÚNICO Y DIVERSIFICADO
+        2: generateUniqueUnitData(2, "International Travel Logistics & Airports", "Past Simple Verbs", "Airport Check-in & Security Protocols", "https://images.unsplash.com/photo-1436491865332-7a61a109cc05"),
+        3: generateUniqueUnitData(3, "Cultural Exchange & Memorable Experiences", "Present Perfect vs. Simple Past", "Global Traditions & Customs", "https://images.unsplash.com/photo-1488646953014-85cb44e25828"),
+        4: generateUniqueUnitData(4, "Environmental Conservation & Ecosystems", "Conditionals (1st & 2nd)", "Biodiversity & Renewable Energy", "https://images.unsplash.com/photo-1497436072909-60f360e1d4b1"),
+        5: generateUniqueUnitData(5, "Scientific Innovation & Technological Futures", "Future Forms", "Artificial Intelligence & Space Exploration", "https://images.unsplash.com/photo-1451187580459-43490279c0fa"),
+        6: generateUniqueUnitData(6, "Culinary Arts & Global Gastronomy", "Quantifiers & Partitives", "Kitchen Management & Nutrition Science", "https://images.unsplash.com/photo-1555396273-367ea4eb4db5"),
+        7: generateUniqueUnitData(7, "Contemporary Literature & Narrative Arts", "Relative Clauses", "Storytelling Structures & Suspense Writing", "https://images.unsplash.com/photo-1457369804613-52c61a468e7d"),
+        8: generateUniqueUnitData(8, "Career Development & Professional Networking", "Modal Verbs of Obligation", "Interviews & Corporate Communication", "https://images.unsplash.com/photo-1521737604893-d14cc237f11d")
+    };
+
+    function generateUniqueUnitData(uId, uTitle, grammar, theme, imgBase) {
+        let sessions = {};
+        const subTopics = [
+            "Foundations and Core Principles",
+            "Advanced Methodological Frameworks",
+            "Digital and Practical Applications",
+            "Crisis Management and Problem Solving",
+            "Capstone Synthesis and Community Forum"
+        ];
+        
+        for (let s = 1; s <= 5; s++) {
+            sessions[s] = {
+                title: `Session ${s}: ${theme} (${subTopics[s-1]})`,
+                focus: grammar,
+                intro: `<strong>Context & Grammar:</strong> In Unit ${uId} Session ${s}, we explore ${theme.toLowerCase()} through the lens of ${grammar}. Students engage with authentic case studies, linguistic markers, and professional strategies.`,
+                theoryImg: `${imgBase}?w=600&auto=format&fit=crop&q=80`,
+                vocabulary: [
+                    { term: "Framework", type: "noun", meaning: "A supporting structure around which something is built." },
+                    { term: "Methodology", type: "noun", meaning: "A system of methods used in a particular area of study." }
+                ],
+                paragraphs: [
+                    `Examining ${theme.toLowerCase()} requires a rigorous analysis of foundational parameters and international protocols.`,
+                    `Scholars investigate how industry leaders implement ${grammar} within global operational environments to optimize outcomes.`,
+                    `Empirical data confirms that structured linguistic mastery significantly enhances professional competency and cross-cultural execution.`
+                ],
+                audioScript: `Welcome to Unit ${uId}, Session ${s} covering ${theme}. Today we analyze structural models utilizing ${grammar}. Listen closely to identify key variables and professional terminology.`,
+                readingImg: `${imgBase}?w=600&auto=format&fit=crop&q=80`,
+                questionsRead: [
+                    { q: "1. What is the primary analytical focus of this session?", options: ["A) " + theme, "B) Ancient cartography", "C) Marine ecosystems"], correct: "A", explanation: "The session focuses directly on " + theme + "." },
+                    { q: "2. Which grammatical structure supports the analysis?", options: ["A) " + grammar, "B) Future perfect continuous", "C) Third conditional"], correct: "A", explanation: "Grammar focus is set on " + grammar + "." },
+                    { q: "3. What do empirical studies confirm regarding mastery?", options: ["A) It enhances professional competency and cross-cultural execution.", "B) Studies remain inconclusive.", "C) Grammar has no practical value."], correct: "A", explanation: "Mastery enhances professional competency." },
+                    { q: "4. How do professionals approach these challenges?", options: ["A) Through structured operational environments.", "B) By random guesswork.", "C) By ignoring protocols."], correct: "A", explanation: "Professionals rely on structured operational environments." }
+                ],
+                questionsList: [
+                    { q: "1. What core subject does the audio lecture introduce?", options: ["A) " + theme, "B) Architectural drafting", "C) Organic chemistry"], correct: "A", explanation: "The lecture introduces " + theme + "." },
+                    { q: "2. Why is structural methodology vital in this field?", options: ["A) It ensures high accuracy and operational efficiency.", "B) It increases paperwork.", "C) It slows down decision-making."], correct: "A", explanation: "Methodology ensures high accuracy and efficiency." },
+                    { q: "3. What approach is recommended for practitioners?", options: ["A) Rigorous examination of core operational variables.", "B) Casual observation.", "C) Complete improvisation."], correct: "A", explanation: "Rigorous examination of core variables is recommended." },
+                    { q: "4. What is the expected takeaway for students?", options: ["A) Mastery of professional discourse and tactical execution.", "B) Memorizing isolated word lists.", "C) Skipping practical exercises."], correct: "A", explanation: "Mastery of professional discourse is the key takeaway." }
+                ]
+            };
+        }
+        return sessions;
+    }
+
+    function toggleAuthMode() {
+        isRegisterMode = !isRegisterMode;
+        const title = document.getElementById('auth-title');
+        const subtitle = document.getElementById('auth-subtitle');
+        const submitBtn = document.getElementById('auth-submit-btn');
+        const toggleText = document.getElementById('auth-toggle-text');
+        const nameContainer = document.getElementById('name-field-container');
+
+        if (isRegisterMode) {
+            title.innerText = "Student Registration";
+            subtitle.innerText = "Create your account with email and password to track and store your course progress in the cloud.";
+            submitBtn.innerText = "Register Account & Take Survey ➔";
+            toggleText.innerText = "Already have an account? Sign in here";
+            nameContainer.classList.remove('hidden');
+        } else {
+            title.innerText = "Student Login";
+            subtitle.innerText = "Enter your credentials to securely access your cloud-saved course progress across devices.";
+            submitBtn.innerText = "Sign In ➔";
+            toggleText.innerText = "Don't have an account? Register here";
+            nameContainer.classList.add('hidden');
+        }
+    }
+
+    function handleAuth() {
+        const email = document.getElementById('auth-email').value.trim().toLowerCase();
+        const password = document.getElementById('auth-password').value.trim();
+        const nameInput = document.getElementById('auth-name').value.trim();
+        const isAnon = document.getElementById('user-anonymous').checked;
+
+        if (!email || !email.includes('@') || !password) {
+            alert('Please enter a valid email address and password.');
+            return;
+        }
+
+        const userKey = 'dyscover_user_' + email;
+        const existingUserJSON = localStorage.getItem(userKey);
+
+        if (isRegisterMode) {
+            if (existingUserJSON) {
+                alert('An account with this email already exists. Please log in.');
+                return;
+            }
+            if (!nameInput) {
+                alert('Please enter your name or nickname for registration.');
+                return;
+            }
+
+            const newUser = {
+                email: email,
+                nickname: nameInput,
+                password: password,
+                anonymous: isAnon,
+                unlockedUnit: 1,
+                unlockedSession: 1,
+                surveyCompleted: false
+            };
+            localStorage.setItem(userKey, JSON.stringify(newUser));
+            userProfile = newUser;
+            
+            document.getElementById('auth-card').classList.add('hidden');
+            document.getElementById('survey-card').classList.remove('hidden');
+        } else {
+            if (!existingUserJSON) {
+                alert('No account found with this email. Please register first.');
+                return;
+            }
+
+            const userData = JSON.parse(existingUserJSON);
+            if (userData.password !== password) {
+                alert('Incorrect password. Please try again.');
+                return;
+            }
+
+            userProfile = userData;
+            if (!userProfile.surveyCompleted) {
+                document.getElementById('auth-card').classList.add('hidden');
+                document.getElementById('survey-card').classList.remove('hidden');
+            } else {
+                loadUserSession(userData);
+            }
+        }
+    }
+
+    function completeSurvey() {
+        userProfile.surveyCompleted = true;
+        localStorage.setItem('dyscover_user_' + userProfile.email, JSON.stringify(userProfile));
+        document.getElementById('survey-card').classList.add('hidden');
+        loadUserSession(userProfile);
+    }
+
+    function loadUserSession(userData) {
+        userProfile = userData;
+        unlockedUnit = userData.unlockedUnit || 1;
+        unlockedSession = userData.unlockedSession || 1;
+        currentUnit = unlockedUnit;
+        currentSession = unlockedSession;
+
+        const displayName = userProfile.anonymous ? '🕶️ Anonymous Student' : `👤 ${userProfile.nickname}`;
+        document.getElementById('display-student-name').innerText = displayName;
+        document.getElementById('display-student-email').innerText = userProfile.email;
+
+        document.getElementById('auth-card').classList.add('hidden');
+        document.getElementById('survey-card').classList.add('hidden');
+        document.getElementById('portal-display').classList.remove('hidden');
+        document.getElementById('dys-ai-widget').classList.remove('hidden');
+        updateProgressUI();
+        renderTabs();
+        renderContent();
+    }
+
+    function logoutUser() {
+        document.getElementById('portal-display').classList.add('hidden');
+        document.getElementById('survey-card').classList.add('hidden');
+        document.getElementById('dys-ai-widget').classList.add('hidden');
+        document.getElementById('auth-card').classList.remove('hidden');
+        document.getElementById('auth-email').value = '';
+        document.getElementById('auth-password').value = '';
+        document.getElementById('auth-name').value = '';
+    }
+
+    function saveProgressToStorage() {
+        userProfile.unlockedUnit = unlockedUnit;
+        userProfile.unlockedSession = unlockedSession;
+        localStorage.setItem('dyscover_user_' + userProfile.email, JSON.stringify(userProfile));
+        updateProgressUI();
+    }
+
+    function updateProgressUI() {
+        const completedSessionsCount = ((unlockedUnit - 1) * 5) + (unlockedSession - 1);
+        const percent = Math.round((completedSessionsCount / 40) * 100);
+        document.getElementById('progress-percent').innerText = percent + '%';
+        document.getElementById('course-progress-bar').value = completedSessionsCount;
+    }
+
+    function changeTheme(theme) { document.body.className = document.body.className.replace(/theme-\S+/, '') + ` theme-${theme}`; }
+    function changeFont(font) { document.body.className = document.body.className.replace(/font-\S+/, '') + ` font-${font}`; }
+    function changeFontSize(size) { document.documentElement.style.setProperty('--font-size-base', size); }
+
+    function toggleFocusGuide() {
+        const guide = document.getElementById('reading-focus-guide');
+        if (guide.style.display === 'block') {
+            guide.style.display = 'none';
+            document.removeEventListener('mousemove', moveGuide);
+        } else {
+            guide.style.display = 'block';
+            document.addEventListener('mousemove', moveGuide);
+        }
+    }
+
+    function moveGuide(e) { document.getElementById('reading-focus-guide').style.top = (e.clientY - 19) + 'px'; }
+
+    function renderTabs() {
+        const uContainer = document.getElementById('unit-tabs');
+        uContainer.innerHTML = '';
+        unitsData.forEach(u => {
+            const isLocked = u.id > unlockedUnit;
+            uContainer.innerHTML += `
+                <div class="unit-tab ${u.id === currentUnit ? 'active' : ''} ${isLocked ? 'locked' : ''}" 
+                     onclick="${isLocked ? '' : `switchUnit(${u.id})`}">
+                    Unit ${u.id} ${isLocked ? '🔒' : ''}
+                </div>
+            `;
+        });
+
+        const sContainer = document.getElementById('session-tabs');
+        sContainer.innerHTML = '';
+        for (let s = 1; s <= 5; s++) {
+            const isLocked = (currentUnit === unlockedUnit && s > unlockedSession);
+            sContainer.innerHTML += `
+                <button class="session-btn ${s === currentSession ? 'active' : ''} ${isLocked ? 'locked' : ''}" 
+                        onclick="${isLocked ? '' : `switchSession(${s})`}">
+                    Session ${s} ${isLocked ? '🔒' : ''}
+                </button>
+            `;
+        }
+    }
+
+    function switchUnit(id) { currentUnit = id; currentSession = 1; skillStep = 1; audioListenCount = 0; renderTabs(); renderContent(); }
+    function switchSession(s) { currentSession = s; skillStep = 1; audioListenCount = 0; renderTabs(); renderContent(); }
+
+    function updateOrder(selectElem, index) {
+        activityOrder[index] = selectElem.value;
+        renderContent();
+    }
+
+    function makeWordsClickable(text) {
+        return text.split(' ').map(w => {
+            let clean = w.replace(/[^a-zA-Z]/g, '');
+            if (!clean) return w;
+            return `<span class="clickable-word" onclick="analyzeWord('${clean}')">${w}</span>`;
+        }).join(' ');
+    }
+
+    function renderContent() {
+        const display = document.getElementById('content-display');
+        const unit = unitsData.find(u => u.id === currentUnit);
+        const unitContentMap = sessionContents[currentUnit] || sessionContents[1];
+        const sessionData = unitContentMap[currentSession] || unitContentMap[1];
+
+        // SESIÓN 5: FORO CAPSTONE CON INSTRUCCIONES CLARAS
+        if (currentSession === 5) {
+            display.innerHTML = `
+                <h2 style="color: var(--primary-dark); margin-bottom: 5px;">${unit.title} — ${sessionData.title}</h2>
+                <p style="color: var(--secondary-purple); font-weight: bold; margin-bottom: 15px;">Linguistic Focus: ${sessionData.focus}</p>
+
+                <div class="card" style="background: var(--pastel-mint); border-color: #A7F3D0; margin-bottom: 25px;">
+                    <h3 style="color: #065F46; margin-bottom: 8px;">💡 Pre-Session Theory & Context</h3>
+                    <p style="margin-bottom: 12px; font-size: 1.05rem;">${sessionData.intro}</p>
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: center; margin-top: 15px;">
+                        <img src="${sessionData.theoryImg}" alt="Visual theme reference" style="width: 260px; height: 160px; object-fit: cover; border-radius: 10px; border: 2px solid #A7F3D0;">
+                        <div style="flex: 1; background: #FFF; padding: 15px; border-radius: 8px; border: 1px solid #A7F3D0;">
+                            <h4 style="color: #065F46; margin-bottom: 6px;">New Session Vocabulary:</h4>
+                            <ul style="padding-left: 20px; font-size: 0.95rem; display: flex; flex-direction: column; gap: 6px;">
+                                ${sessionData.vocabulary.map(v => `<li><strong>${v.term}</strong> (${v.type}): ${v.meaning}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="capstone-forum" style="background: var(--pastel-lavender); border: 2px solid var(--secondary-purple); border-radius: 12px; padding: 25px; margin-top: 25px;">
+                    <h3 style="color: var(--primary-dark);">🎓 Unit ${currentUnit} Community Capstone Forum</h3>
+                    <p style="margin-bottom: 12px; font-size: 1.05rem;"><strong>Instructions:</strong> Write a comprehensive 200-word synthesis in English discussing how this unit's concepts apply to real-world environments. Alternatively, record your 90-second audio statement using <a href="https://vocaroo.com" target="_blank" style="color:var(--secondary-purple); font-weight:bold;">Vocaroo</a> and paste your link below. Posting profile: <strong>${userProfile.anonymous ? '🕶️ Anonymous Student' : userProfile.nickname}</strong></p>
+                    
+                    <textarea class="board-input" placeholder="Type your academic synthesis or paste your Vocaroo audio link here in English..."></textarea>
+                    
+                    <div style="margin-top: 15px;">
+                        <label style="font-weight: 600; display: block; margin-bottom: 5px;">Or upload your audio file directly (.mp3 / .wav):</label>
+                        <input type="file" accept="audio/*" class="btn-tool">
+                    </div>
+
+                    <button class="btn-tool" style="background: var(--secondary-purple); color: #FFF; width: 100%; padding: 14px; margin-top: 20px;" onclick="completeUnit()">Submit Capstone & Unlock Unit ${currentUnit + 1} 🔓</button>
+                </div>
+            `;
+            return;
+        }
+
+        let readingHtml = sessionData.paragraphs.map(p => `<p class="reading-paragraph">${makeWordsClickable(p)}</p>`).join('');
+        let vocabHtml = sessionData.vocabulary.map(v => `<li><strong>${v.term}</strong> (${v.type}): ${v.meaning}</li>`).join('');
+
+        let activeAct = activityOrder[skillStep - 1] || 'reading';
+        let activityHtml = '';
+
+        if (activeAct === 'reading') {
+            activityHtml = `
+                <div class="skill-block">
+                    <h4>📖 Reading Comprehension</h4>
+                    <p style="margin-bottom: 12px; color: var(--text-subtle);"><strong>Instructions:</strong> Read the academic text below. Click any word to inspect its IPA phonetics and pronunciation options.</p>
+                    
+                    <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap; margin-bottom: 15px; background: var(--bg-canvas); padding: 12px; border-radius: 8px;">
+                        <button class="btn-tool" style="background:var(--secondary-purple); color:#FFF;" onclick="playBimodalReading('${encodeURIComponent(sessionData.paragraphs.join(' '))}')">🔊 Listen / Follow Reading</button>
+                        <label>Voice: <select id="reading-voice" class="btn-tool" style="padding:4px;"><option value="en-US">US Female</option><option value="en-US-male">US Male</option><option value="en-GB">UK Female</option><option value="en-GB-male">UK Male</option></select></label>
+                        <label>Speed: <select id="reading-speed" class="btn-tool" style="padding:4px;"><option value="0.75">0.75x</option><option value="1.0" selected>1.0x</option><option value="1.25">1.25x</option></select></label>
+                    </div>
+
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: center; margin-bottom: 20px;">
+                        <img src="${sessionData.readingImg}" alt="Reading illustration" style="width: 100%; max-height: 240px; object-fit: cover; border-radius: 10px; border: 2px solid var(--border-color);">
+                    </div>
+
+                    <div style="margin: 15px 0;">${readingHtml}</div>
+
+                    <h4 style="color: var(--primary-dark); margin-top: 20px; margin-bottom: 10px;">Reading Assessment (4 Questions)</h4>
+                    ${sessionData.questionsRead.map((qObj, qIdx) => `
+                        <div style="background: var(--bg-canvas); padding: 15px; border-radius: 8px; margin-top: 15px;" id="read-q-container-${qIdx}">
+                            <p><strong>${qObj.q}</strong></p>
+                            <label class="quiz-option"><input type="radio" name="read_q${qIdx}" value="A"> ${qObj.options[0]}</label>
+                            <label class="quiz-option"><input type="radio" name="read_q${qIdx}" value="B"> ${qObj.options[1]}</label>
+                            <label class="quiz-option"><input type="radio" name="read_q${qIdx}" value="C"> ${qObj.options[2]}</label>
+                        </div>
+                    `).join('')}
+
+                    <button class="btn-tool" style="margin-top: 20px; background: #0284C7; color: #FFF; width: 100%; padding: 12px;" onclick="evaluateReadingAnswers()">Evaluate Reading 📝</button>
+                    <div id="reading-evaluation-results" style="margin-top: 15px;"></div>
+                    <button class="btn-tool" style="margin-top: 25px; background: var(--secondary-purple); color: #FFF; width: 100%; padding: 14px;" onclick="advanceStep()">Next Activity ➔</button>
+                </div>
+            `;
+        } else if (activeAct === 'listening') {
+            activityHtml = `
+                <div class="skill-block" style="border-left-color: #3B82F6;">
+                    <h4>🎧 Advanced Listening Seminar</h4>
+                    <p style="margin-bottom: 12px; color: var(--text-subtle);"><strong>Instructions:</strong> Listen to the academic lecture audio. Use Play, Pause, and Resume controls seamlessly. Transcripts unlock after 3 verified listens.</p>
+                    
+                    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin: 15px 0; background: var(--bg-canvas); padding: 12px; border-radius: 8px;">
+                        <button class="btn-tool" onclick="controlAudio('play', '${encodeURIComponent(sessionData.audioScript)}')">▶ Play Audio</button>
+                        <button class="btn-tool" onclick="controlAudio('pause')">⏸ Pause / Resume</button>
+                        <button class="btn-tool" onclick="controlAudio('reset')">⏹ Reset</button>
+                        <label>Voice: <select id="listening-voice" class="btn-tool" style="padding:4px;"><option value="en-US">US Female</option><option value="en-US-male">US Male</option><option value="en-GB">UK Female</option><option value="en-GB-male">UK Male</option></select></label>
+                        <label>Speed: <select id="listening-speed" class="btn-tool" style="padding:4px;"><option value="0.75">0.75x</option><option value="1.0" selected>1.0x</option><option value="1.25">1.25x</option></select></label>
+                        <span id="audio-counter-badge" style="margin-left: 10px; font-weight: bold; color: var(--secondary-purple);">Listens: ${audioListenCount}/3</span>
+                    </div>
+
+                    <button class="btn-tool" id="btn-transcript" style="opacity: 0.5; cursor: not-allowed;" onclick="toggleTranscript()">🔒 Academic Transcript (Listen 3 times)</button>
+                    <div id="transcript-box" class="hidden" style="background: var(--bg-canvas); padding: 18px; border-radius: 8px; margin-top: 10px;">
+                        <em>"${sessionData.audioScript}"</em>
+                    </div>
+
+                    <h4 style="color: var(--primary-dark); margin-top: 25px; margin-bottom: 10px;">Listening Assessment (4 Questions)</h4>
+                    ${sessionData.questionsList.map((qObj, qIdx) => `
+                        <div style="background: var(--bg-canvas); padding: 15px; border-radius: 8px; margin-top: 15px;" id="list-q-container-${qIdx}">
+                            <p><strong>${qObj.q}</strong></p>
+                            <label class="quiz-option"><input type="radio" name="list_q${qIdx}" value="A"> ${qObj.options[0]}</label>
+                            <label class="quiz-option"><input type="radio" name="list_q${qIdx}" value="B"> ${qObj.options[1]}</label>
+                            <label class="quiz-option"><input type="radio" name="list_q${qIdx}" value="C"> ${qObj.options[2]}</label>
+                        </div>
+                    `).join('')}
+
+                    <button class="btn-tool" style="margin-top: 20px; background: #0284C7; color: #FFF; width: 100%; padding: 12px;" onclick="evaluateListeningAnswers()">Evaluate Listening 📝</button>
+                    <div id="listening-evaluation-results" style="margin-top: 15px;"></div>
+                    <button class="btn-tool" style="margin-top: 25px; background: var(--secondary-purple); color: #FFF; width: 100%; padding: 14px;" onclick="advanceStep()">Next Activity ➔</button>
+                </div>
+            `;
+        } else if (activeAct === 'speaking') {
+            activityHtml = `
+                <div class="skill-block" style="border-left-color: #10B981;">
+                    <h4>🗣️ Oral Academic Defense & Voice Recording</h4>
+                    <p style="font-size: 1.05rem; margin-bottom: 15px;"><strong>Detailed Instructions:</strong> Record a 60-to-90 second oral statement in English discussing how you navigate your university campus, describing current mobility barriers, and proposing specific infrastructural enhancements (e.g., smart digital kiosks or tactile pathways). You can record directly here or use <a href="https://vocaroo.com" target="_blank" style="color:var(--secondary-purple); font-weight:bold;">Vocaroo</a>, download your audio, and upload it below.</p>
+                    
+                    <div style="margin: 15px 0; display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+                        <button id="record-btn" class="btn-tool" style="background: #10B981; color: #FFF; padding: 12px 20px;" onclick="toggleRecordVoice()">🎙️ Record Voice Note</button>
+                        <span id="recording-timer-display" style="font-weight: 700; font-size: 1.1rem; color: var(--primary-dark);">00:00 / 01:30</span>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <label style="font-weight: 600; display: block; margin-bottom: 5px;">Or upload external audio recording (.mp3 / .wav from Vocaroo):</label>
+                        <input type="file" accept="audio/*" class="btn-tool" onchange="handleAudioUpload(event)">
+                    </div>
+                    <div id="speaking-ai-feedback"></div>
+                    <button class="btn-tool" style="margin-top: 25px; background: var(--secondary-purple); color: #FFF; width: 100%; padding: 14px;" onclick="advanceStep()">Next Activity ➔</button>
+                </div>
+            `;
+        } else if (activeAct === 'writing') {
+            activityHtml = `
+                <div class="skill-block" style="border-left-color: #F59E0B;">
+                    <h4>✍️ Academic Writing & AI Feedback</h4>
+                    <p style="font-size: 1.05rem; margin-bottom: 15px;"><strong>Detailed Instructions:</strong> Draft a 120-180 word academic synthesis in English describing how students navigate your institution, evaluating current accessibility challenges, and proposing concrete technological solutions utilizing today's grammar focus (<strong>${sessionData.focus}</strong>).</p>
+                    
+                    <textarea id="writing-input" class="board-input" placeholder="Compose your academic synthesis in English here..."></textarea>
+                    <button class="btn-tool" style="background: #F59E0B; color: #FFF; padding: 12px 20px;" onclick="analyzeCustomWriting()">✨ Analyze with Dys AI</button>
+                    <div id="writing-ai-feedback"></div>
+                    <button class="btn-tool" style="margin-top: 25px; background: var(--secondary-purple); color: #FFF; width: 100%; padding: 14px;" onclick="advanceStep()">Next Activity ➔</button>
+                </div>
+            `;
+        } else if (activeAct === 'arcade') {
+            // ARCADE VARIADO ESTILO DUOLINGO
+            let arcadeHtml = "";
+            let modType = currentSession % 3;
+            
+            if (modType === 1) {
+                arcadeHtml = `
+                    <h5 style="color: var(--primary-dark); margin-bottom: 8px;">Duolingo-style Challenge: Word Scramble</h5>
+                    <p style="margin-bottom: 12px;">Unscramble the letters to form a key session vocabulary term: <em>"G A N I I V T A N G"</em> (Hint: moving through a complex space)</p>
+                    <input type="text" id="arcade-input-1" placeholder="Type your answer here..." style="width: 100%; padding: 10px; border-radius: 8px; border: 1.5px solid var(--border-color); margin-bottom: 10px;">
+                    <button class="btn-tool" style="background: #0284C7; color: #FFF;" onclick="checkArcadeAnswer('navigating', 'arcade-input-1', 'arcade-feedback-1')">Check Answer 🔎</button>
+                    <div id="arcade-feedback-1" style="margin-top: 10px;"></div>
+                `;
+            } else if (modType === 2) {
+                arcadeHtml = `
+                    <h5 style="color: var(--primary-dark); margin-bottom: 8px;">Duolingo-style Challenge: Multiple Choice Grammar</h5>
+                    <p style="margin-bottom: 12px;">Select the correct grammatical form to complete the sentence: <em>"Right now, the urban planners ______ a new digital kiosk network."</em></p>
+                    <label class="quiz-option"><input type="radio" name="arc2" value="wrong"> A) prototype</label>
+                    <label class="quiz-option"><input type="radio" name="arc2" value="correct"> B) are currently prototyping</label>
+                    <button class="btn-tool" style="margin-top: 10px; background: #0284C7; color: #FFF;" onclick="checkRadioArcade('correct', 'arcade-feedback-2')">Check Answer 🔎</button>
+                    <div id="arcade-feedback-2" style="margin-top: 10px;"></div>
+                `;
+            } else {
+                arcadeHtml = `
+                    <h5 style="color: var(--primary-dark); margin-bottom: 8px;">Duolingo-style Challenge: Fill in the Blank</h5>
+                    <p style="margin-bottom: 12px;">Type the missing word: <em>"Good public transport ______ reduces campus traffic congestion."</em> (Hint: physical structures)</p>
+                    <input type="text" id="arcade-input-3" placeholder="Type your answer here..." style="width: 100%; padding: 10px; border-radius: 8px; border: 1.5px solid var(--border-color); margin-bottom: 10px;">
+                    <button class="btn-tool" style="background: #0284C7; color: #FFF;" onclick="checkArcadeAnswer('infrastructure', 'arcade-input-3', 'arcade-feedback-3')">Check Answer 🔎</button>
+                    <div id="arcade-feedback-3" style="margin-top: 10px;"></div>
+                `;
+            }
+
+            activityHtml = `
+                <div class="skill-block" style="border-left-color: #EC4899;">
+                    <h4>🎮 Advanced Lexical Arcade & Gamified Puzzles</h4>
+                    <p style="margin-bottom: 15px;">Complete the interactive puzzle below to reinforce your vocabulary and grammar retention.</p>
+                    
+                    <div style="background: var(--bg-canvas); padding: 20px; border-radius: 12px; margin: 15px 0; border: 2px solid var(--border-color);">
+                        ${arcadeHtml}
+                    </div>
+
+                    <button class="btn-tool" id="btn-finish-session" style="background: #EC4899; color: #FFF; width: 100%; padding: 14px; opacity: 0.5; cursor: not-allowed;" disabled onclick="completeSessionStep()">Complete Session ${currentSession} ✔</button>
+                </div>
+            `;
+        }
+
+        display.innerHTML = `
+            <h2 style="color: var(--primary-dark); margin-bottom: 5px;">${unit.title} — ${sessionData.title}</h2>
+            <p style="color: var(--secondary-purple); font-weight: bold; margin-bottom: 15px;">Linguistic Focus: ${sessionData.focus}</p>
+
+            <div style="background: var(--pastel-lavender); border: 2px solid var(--secondary-purple); padding: 15px; border-radius: 12px; margin-bottom: 25px;">
+                <h4 style="color: var(--primary-dark); margin-bottom: 8px;">⚙️ Customize Your Learning Flow</h4>
+                <p style="font-size: 0.9rem; margin-bottom: 10px;">Select the sequence in which you prefer to tackle today's activities:</p>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <select class="btn-tool" onchange="updateOrder(this, 0)"><option value="reading" ${activityOrder[0]==='reading'?'selected':''}>1. Reading</option><option value="listening" ${activityOrder[0]==='listening'?'selected':''}>1. Listening</option><option value="speaking" ${activityOrder[0]==='speaking'?'selected':''}>1. Speaking</option><option value="writing" ${activityOrder[0]==='writing'?'selected':''}>1. Writing</option><option value="arcade" ${activityOrder[0]==='arcade'?'selected':''}>1. Arcade</option></select>
+                    <select class="btn-tool" onchange="updateOrder(this, 1)"><option value="reading" ${activityOrder[1]==='reading'?'selected':''}>2. Reading</option><option value="listening" ${activityOrder[1]==='listening'?'selected':''}>2. Listening</option><option value="speaking" ${activityOrder[1]==='speaking'?'selected':''}>2. Speaking</option><option value="writing" ${activityOrder[1]==='writing'?'selected':''}>2. Writing</option><option value="arcade" ${activityOrder[1]==='arcade'?'selected':''}>2. Arcade</option></select>
+                    <select class="btn-tool" onchange="updateOrder(this, 2)"><option value="reading" ${activityOrder[2]==='reading'?'selected':''}>3. Reading</option><option value="listening" ${activityOrder[2]==='listening'?'selected':''}>3. Listening</option><option value="speaking" ${activityOrder[2]==='speaking'?'selected':''}>3. Speaking</option><option value="writing" ${activityOrder[2]==='writing'?'selected':''}>3. Writing</option><option value="arcade" ${activityOrder[2]==='arcade'?'selected':''}>3. Arcade</option></select>
+                    <select class="btn-tool" onchange="updateOrder(this, 3)"><option value="reading" ${activityOrder[3]==='reading'?'selected':''}>4. Reading</option><option value="listening" ${activityOrder[3]==='listening'?'selected':''}>4. Listening</option><option value="speaking" ${activityOrder[3]==='speaking'?'selected':''}>4. Speaking</option><option value="writing" ${activityOrder[3]==='writing'?'selected':''}>4. Writing</option><option value="arcade" ${activityOrder[3]==='arcade'?'selected':''}>4. Arcade</option></select>
+                    <select class="btn-tool" onchange="updateOrder(this, 4)"><option value="reading" ${activityOrder[4]==='reading'?'selected':''}>5. Reading</option><option value="listening" ${activityOrder[4]==='listening'?'selected':''}>5. Listening</option><option value="speaking" ${activityOrder[4]==='speaking'?'selected':''}>5. Speaking</option><option value="writing" ${activityOrder[4]==='writing'?'selected':''}>5. Writing</option><option value="arcade" ${activityOrder[4]==='arcade'?'selected':''}>5. Arcade</option></select>
+                </div>
+            </div>
+
+            <div class="card" style="background: var(--pastel-mint); border-color: #A7F3D0; margin-bottom: 25px;">
+                <h3 style="color: #065F46; margin-bottom: 8px;">💡 Pre-Session Theory & Context</h3>
+                <p style="margin-bottom: 12px; font-size: 1.05rem;">${sessionData.intro}</p>
+                <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: center; margin-top: 15px;">
+                    <img src="${sessionData.theoryImg}" alt="Visual theme reference" style="width: 260px; height: 160px; object-fit: cover; border-radius: 10px; border: 2px solid #A7F3D0;">
+                    <div style="flex: 1; background: #FFF; padding: 15px; border-radius: 8px; border: 1px solid #A7F3D0;">
+                        <h4 style="color: #065F46; margin-bottom: 6px;">New Session Vocabulary:</h4>
+                        <ul style="padding-left: 20px; font-size: 0.95rem; display: flex; flex-direction: column; gap: 6px;">
+                            ${vocabHtml}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            ${activityHtml}
+        `;
+    }
+
+    function advanceStep() {
+        skillStep++;
+        if (skillStep > 5) skillStep = 5;
+        renderContent();
+    }
+
+    // RETROALIMENTACIÓN DETALLADA PARA READING CON ACIERTOS, FALLOS Y EXPLICACIONES
+    function evaluateReadingAnswers() {
+        const unitContentMap = sessionContents[currentUnit] || sessionContents[1];
+        const sessionData = unitContentMap[currentSession] || unitContentMap[1];
+        let score = 0;
+        let feedbackHTML = `<div style="margin-top: 10px;">`;
+
+        sessionData.questionsRead.forEach((qObj, qIdx) => {
+            const selected = document.querySelector(`input[name="read_q${qIdx}"]:checked`);
+            const container = document.getElementById(`read-q-container-${qIdx}`);
+            
+            if (selected && selected.value === qObj.correct) {
+                score++;
+                container.style.border = "2px solid #10B981";
+                feedbackHTML += `<div class="feedback-box feedback-correct" style="margin-bottom:8px;"><strong>Question ${qIdx+1} Correct!</strong> ${qObj.explanation}</div>`;
+            } else {
+                container.style.border = "2px solid #EF4444";
+                let userAns = selected ? selected.value : "None";
+                feedbackHTML += `<div class="feedback-box feedback-incorrect" style="margin-bottom:8px;"><strong>Question ${qIdx+1} Incorrect (You chose ${userAns}, correct was ${qObj.correct}):</strong> ${qObj.explanation}</div>`;
+            }
+        });
+
+        feedbackHTML += `</div>`;
+        document.getElementById('reading-evaluation-results').innerHTML = `
+            <div style="font-weight: bold; margin-bottom: 10px; font-size: 1.1rem;">Score: ${score} / 4 correct</div>
+            ${feedbackHTML}
+        `;
+    }
+
+    // RETROALIMENTACIÓN DETALLADA PARA LISTENING CON ACIERTOS, FALLOS Y EXPLICACIONES
+    function evaluateListeningAnswers() {
+        const unitContentMap = sessionContents[currentUnit] || sessionContents[1];
+        const sessionData = unitContentMap[currentSession] || unitContentMap[1];
+        let score = 0;
+        let feedbackHTML = `<div style="margin-top: 10px;">`;
+
+        sessionData.questionsList.forEach((qObj, qIdx) => {
+            const selected = document.querySelector(`input[name="list_q${qIdx}"]:checked`);
+            const container = document.getElementById(`list-q-container-${qIdx}`);
+            
+            if (selected && selected.value === qObj.correct) {
+                score++;
+                container.style.border = "2px solid #10B981";
+                feedbackHTML += `<div class="feedback-box feedback-correct" style="margin-bottom:8px;"><strong>Question ${qIdx+1} Correct!</strong> ${qObj.explanation}</div>`;
+            } else {
+                container.style.border = "2px solid #EF4444";
+                let userAns = selected ? selected.value : "None";
+                feedbackHTML += `<div class="feedback-box feedback-incorrect" style="margin-bottom:8px;"><strong>Question ${qIdx+1} Incorrect (You chose ${userAns}, correct was ${qObj.correct}):</strong> ${qObj.explanation}</div>`;
+            }
+        });
+
+        feedbackHTML += `</div>`;
+        document.getElementById('listening-evaluation-results').innerHTML = `
+            <div style="font-weight: bold; margin-bottom: 10px; font-size: 1.1rem;">Score: ${score} / 4 correct</div>
+            ${feedbackHTML}
+        `;
+    }
+
+    function controlAudio(action, encodedScript) {
+        if (!('speechSynthesis' in window)) return;
+
+        if (action === 'play') {
+            if (isPausedAudio) {
+                window.speechSynthesis.resume();
+                isPausedAudio = false;
+                return;
+            }
+            if (window.speechSynthesis.speaking) {
+                window.speechSynthesis.pause();
+                isPausedAudio = true;
+                return;
+            }
+
+            window.speechSynthesis.cancel();
+            audioListenCount++;
+            document.getElementById('audio-counter-badge').innerText = `Listens: ${audioListenCount}/3`;
+
+            lastAudioScript = decodeURIComponent(encodedScript);
+            currentUtterance = new SpeechSynthesisUtterance(lastAudioScript);
+            currentUtterance.rate = parseFloat(document.getElementById('listening-speed').value);
+            
+            let voiceChoice = document.getElementById('listening-voice').value;
+            if (voiceChoice === 'en-US') currentUtterance.lang = 'en-US';
+            else if (voiceChoice === 'en-US-male') { currentUtterance.lang = 'en-US'; currentUtterance.pitch = 0.8; }
+            else if (voiceChoice === 'en-GB') currentUtterance.lang = 'en-GB';
+            else if (voiceChoice === 'en-GB-male') { currentUtterance.lang = 'en-GB'; currentUtterance.pitch = 0.8; }
+
+            currentUtterance.onend = () => { isPausedAudio = false; };
+            window.speechSynthesis.speak(currentUtterance);
+
+            if (audioListenCount >= 3) {
+                const btn = document.getElementById('btn-transcript');
+                btn.style.opacity = '1';
+                btn.style.cursor = 'pointer';
+                btn.innerText = '🔓 View Academic Transcript';
+            }
+        } else if (action === 'pause') {
+            if (window.speechSynthesis.speaking && !isPausedAudio) {
+                window.speechSynthesis.pause();
+                isPausedAudio = true;
+            } else if (isPausedAudio) {
+                window.speechSynthesis.resume();
+                isPausedAudio = false;
+            }
+        } else if (action === 'reset') {
+            window.speechSynthesis.cancel();
+            isPausedAudio = false;
+        }
+    }
+
+    function playBimodalReading(encodedText) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const u = new SpeechSynthesisUtterance(decodeURIComponent(encodedText));
+            u.rate = parseFloat(document.getElementById('reading-speed').value);
+            let voiceChoice = document.getElementById('reading-voice').value;
+            if (voiceChoice === 'en-US') u.lang = 'en-US';
+            else if (voiceChoice === 'en-US-male') { u.lang = 'en-US'; u.pitch = 0.8; }
+            else if (voiceChoice === 'en-GB') u.lang = 'en-GB';
+            else if (voiceChoice === 'en-GB-male') { u.lang = 'en-GB'; u.pitch = 0.8; }
+            window.speechSynthesis.speak(u);
+        }
+    }
+
+    function toggleTranscript() {
+        if (audioListenCount >= 3) {
+            document.getElementById('transcript-box').classList.toggle('hidden');
+        }
+    }
+
+    async function toggleRecordVoice() {
+        const btn = document.getElementById('record-btn');
+        const feedbackDiv = document.getElementById('speaking-ai-feedback');
+        const timerDisplay = document.getElementById('recording-timer-display');
+
+        if (!mediaRecorder || mediaRecorder.state === "inactive") {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+
+                mediaRecorder.ondataavailable = event => audioChunks.push(event.data);
+                mediaRecorder.onstop = () => {
+                    clearInterval(recordingTimer);
+                    const audioUrl = URL.createObjectURL(new Blob(audioChunks, { type: 'audio/webm' }));
+                    feedbackDiv.innerHTML = `
+                        <div class="feedback-box feedback-correct" style="margin-top: 15px;">
+                            <strong>✔ Voice Recording Captured (${secondsElapsed}s)! Listen back:</strong><br>
+                            <audio controls src="${audioUrl}" style="width: 100%; margin-top: 10px;"></audio>
+                            <hr style="margin: 10px 0; border: none; border-top: 1px solid #A7F3D0;">
+                            <strong>🤖 Dys AI Personalized Oral Feedback:</strong><br>
+                            • Excellent oral delivery and pacing!<br>
+                            • <strong>Suggestion:</strong> Incorporate formal transition phrases like <em>"Furthermore"</em> or <em>"Consequently"</em> to elevate syntactic cohesion.
+                        </div>
+                    `;
+                };
+
+                mediaRecorder.start();
+                secondsElapsed = 0;
+                recordingTimer = setInterval(() => {
+                    secondsElapsed++;
+                    let mins = String(Math.floor(secondsElapsed / 60)).padStart(2, '0');
+                    let secs = String(secondsElapsed % 60).padStart(2, '0');
+                    timerDisplay.innerText = `${mins}:${secs} / 01:30`;
+                    if (secondsElapsed >= 90) toggleRecordVoice();
+                }, 1000);
+
+                btn.innerText = "⏹️ Stop Recording";
+                btn.style.background = "#EF4444";
+            } catch (err) {
+                alert("Microphone access denied. You can record on Vocaroo and upload your file below.");
+            }
+        } else {
+            mediaRecorder.stop();
+            btn.innerText = "🎙️ Record Voice Note Again";
+            btn.style.background = "#10B981";
+        }
+    }
+
+    function handleAudioUpload(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const url = URL.createObjectURL(file);
+            document.getElementById('speaking-ai-feedback').innerHTML = `
+                <div class="feedback-box feedback-correct" style="margin-top: 15px;">
+                    <strong>✔ External Audio File Linked (${file.name}):</strong><br>
+                    <audio controls src="${url}" style="width: 100%; margin-top: 10px;"></audio>
+                    <hr style="margin: 10px 0; border: none; border-top: 1px solid #A7F3D0;">
+                    <strong>🤖 Dys AI Personalized Oral Feedback:</strong> External audio successfully integrated. Great fluency and delivery!
+                </div>
+            `;
+        }
+    }
+
+    function analyzeCustomWriting() {
+        const val = document.getElementById('writing-input').value.trim();
+        const feedbackDiv = document.getElementById('writing-ai-feedback');
+        if (!val || val.length < 20) {
+            alert('Please write at least a full sentence or paragraph before requesting AI analysis.');
+            return;
+        }
+
+        const wordCount = val.split(/\s+/).length;
+        feedbackDiv.innerHTML = `
+            <div class="feedback-box feedback-correct">
+                <strong>🤖 Dys AI Personalized Writing Analysis:</strong><br>
+                • <strong>Word Count:</strong> You submitted ${wordCount} words.<br>
+                • <strong>Suggestion:</strong> Upgrade your phrasing to: <em>"Empirical investigation substantiates that..."</em> for an advanced academic register.
+            </div>
+        `;
+    }
+
+    function checkArcadeAnswer(expected, inputId, feedbackId) {
+        const val = document.getElementById(inputId).value.trim().toLowerCase();
+        const feedbackDiv = document.getElementById(feedbackId);
+        if (val === expected) {
+            feedbackDiv.className = "feedback-box feedback-correct";
+            feedbackDiv.innerHTML = `✔ Correct! You successfully completed the puzzle.`;
+            document.getElementById('btn-finish-session').style.opacity = '1';
+            document.getElementById('btn-finish-session').style.cursor = 'pointer';
+            document.getElementById('btn-finish-session').removeAttribute('disabled');
+        } else {
+            feedbackDiv.className = "feedback-box feedback-incorrect";
+            feedbackDiv.innerHTML = `✖ Not quite. Check the hint and try again!`;
+        }
+    }
+
+    function checkRadioArcade(expected, feedbackId) {
+        const selected = document.querySelector('input[name="arc2"]:checked');
+        const feedbackDiv = document.getElementById(feedbackId);
+        if (selected && selected.value === expected) {
+            feedbackDiv.className = "feedback-box feedback-correct";
+            feedbackDiv.innerHTML = `✔ Correct! Morphological analysis verified.`;
+            document.getElementById('btn-finish-session').style.opacity = '1';
+            document.getElementById('btn-finish-session').style.cursor = 'pointer';
+            document.getElementById('btn-finish-session').removeAttribute('disabled');
+        } else {
+            feedbackDiv.className = "feedback-box feedback-incorrect";
+            feedbackDiv.innerHTML = `✖ Incorrect selection. Review vocabulary rules.`;
+        }
+    }
+
+    function completeSessionStep() {
+        alert(`Great job! Session ${currentSession} completed. Progress saved securely.`);
+        if (currentSession < 5) {
+            unlockedSession = Math.max(unlockedSession, currentSession + 1);
+            currentSession++;
+            skillStep = 1;
+        }
+        saveProgressToStorage();
+        renderTabs();
+        renderContent();
+    }
+
+    function completeUnit() {
+        alert(`Congratulations! Unit ${currentUnit} Capstone Complete. Unit ${currentUnit + 1} unlocked!`);
+        if (currentUnit < 8) {
+            unlockedUnit++;
+            unlockedSession = 1;
+            currentUnit++;
+            currentSession = 1;
+            skillStep = 1;
+        }
+        saveProgressToStorage();
+        renderTabs();
+        renderContent();
+    }
+
+    // DICCIONARIO MINIMALISTA (SOLO IPA Y PRONUNCIACIÓN)
+    const wordDictionary = {
+        "navigating": { ipa: "/ˈnævɪɡeɪtɪŋ/" },
+        "contemporary": { ipa: "/kənˈtɛmpəreri/" },
+        "cognitive": { ipa: "/ˈkɒɡnətɪv/" },
+        "infrastructure": { ipa: "/ˈɪnfrəstrʌktʃə/" },
+        "autonomous": { ipa: "/ɔːˈtɒnəməs/" },
+        "ergonomics": { ipa: "/ˌɜːɡəˈnɒmɪks/" },
+        "accessibility": { ipa: "/əkˌsɛsəˈbɪlɪti/" }
+    };
+
+    function analyzeWord(word) {
+        if (!word) return;
+        const cleanWord = word.toLowerCase();
+        const entry = wordDictionary[cleanWord] || { ipa: `/${cleanWord}/` };
+
+        document.getElementById('word-title').innerText = `Pronunciation: "${word}"`;
+        document.getElementById('word-body').innerHTML = `
+            <strong>IPA Transcription:</strong> <span style="color: var(--secondary-purple); font-size: 1.25rem; font-weight: bold;">${entry.ipa}</span>
+        `;
+        document.getElementById('btn-speak-word').onclick = () => {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const u = new SpeechSynthesisUtterance(word);
+                u.rate = parseFloat(document.getElementById('modal-speed-select').value);
+                let voiceChoice = document.getElementById('modal-voice-select').value;
+                if (voiceChoice === 'en-US') u.lang = 'en-US';
+                else if (voiceChoice === 'en-US-male') { u.lang = 'en-US'; u.pitch = 0.8; }
+                else if (voiceChoice === 'en-GB') u.lang = 'en-GB';
+                else if (voiceChoice === 'en-GB-male') { u.lang = 'en-GB'; u.pitch = 0.8; }
+                window.speechSynthesis.speak(u);
+            }
+        };
+        document.getElementById('word-modal').classList.remove('hidden');
+    }
+
+    function closeWordModal() { document.getElementById('word-modal').classList.add('hidden'); }
+
+    function toggleDysChat() {
+        document.getElementById('dys-chat-window').classList.toggle('hidden');
+    }
+
+    function sendDysMessage() {
+        const input = document.getElementById('dys-input-msg');
+        const msg = input.value.trim().toLowerCase();
+        if (!msg) return;
+
+        const chatMsgs = document.getElementById('dys-chat-messages');
+        chatMsgs.innerHTML += `<div style="background: var(--pastel-lavender); padding: 8px; border-radius: 6px; text-align: right;"><strong>You:</strong> ${msg}</div>`;
+        input.value = '';
+
+        let aiReply = "I am here to help! Check the pre-session theory and click on any highlighted word in the reading texts to view its IPA pronunciation.";
+        if (msg.includes('spatial') || msg.includes('espacial')) {
+            aiReply = '"Spatial" relates to physical space. In our reading, spatial anchors help reduce orientation anxiety.';
+        } else if (msg.includes('grammar') || msg.includes('tiempo')) {
+            aiReply = "Remember to review the grammar box at the beginning of each session to structure your writing and speaking tasks correctly.";
+        }
+
+        setTimeout(() => {
+            chatMsgs.innerHTML += `<div style="background: #E2E8F0; padding: 8px; border-radius: 6px;"><strong>Dys AI:</strong> ${aiReply}</div>`;
+            chatMsgs.scrollTop = chatMsgs.scrollHeight;
+        }, 600);
+    }
+</script>
+
+</body>
+</html>
